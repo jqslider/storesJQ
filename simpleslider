@@ -1,0 +1,104 @@
+/// <reference path="jquery.js" />
+(function ($) {
+    $.fn.simpleSlider = function (options) {
+        var settings = $.extend({
+            sliderWidth: '10px',
+            sliderBackGround: 'rgba(243,243,243,1)',
+            sliderBoxShadow: '0 0 10px rgba(0,0,0,0.3) inset',
+            sliderBorderRadius: '5px',
+            handleLeft: '0px',
+            handleWidth: '10px',
+            handleBackGround: 'rgb(110,110,110)',
+            handleBorderRadius: '5px'
+        }, options || {});
+
+        $(this)
+        .height($(this).parent().parent().height())
+        .addClass('ui-slider')
+        .append('<a class="ui-slider-handle"></a>')
+        .parent().addClass('slider-content')
+        .parent().css({
+            'position': 'relative',
+            'display': 'block',
+            'overflow-y': 'hidden'
+        });
+        $(this).css({
+            'width': settings.sliderWidth,
+            'background': settings.sliderBackGround,
+            'box-shadow': settings.sliderBoxShadow,
+            'border-radius': settings.sliderBorderRadius
+        });
+        $(this).children('a.ui-slider-handle').css({
+            'left': settings.handleLeft,
+            'width': settings.handleWidth,
+            'background': settings.handleBackGround,
+            'border-radius': settings.handleBorderRadius
+        });
+
+        var frame = $(this).parent().parent(),
+        pane = $(this).parent().next() || $(this).parent.prev(),
+        slider = $(this),
+        handle = $(this).children('a.ui-slider-handle');
+        var frameHeight = frame.height(),
+        paneHeight = pane.height(),
+        r = paneHeight / frameHeight,
+        h1, h2 = paneHeight - frameHeight,
+        sliderHeight = slider.height(),
+        handleHeight,
+        down = false,
+        prevY, currentY;
+        handle.height(sliderHeight / r);
+        handleHeight = handle.height();
+        h1 = sliderHeight - handleHeight;
+
+        $(window).mouseup(function () {
+            down = false;
+        });
+        frame.mousedown(function (e) {
+            down = true;
+            e.preventDefault();
+            currentY = prevY = e.pageY;
+        });
+        $(window).mousemove(function (e) {
+            if (down) {
+                prevY = currentY;
+                currentY = e.pageY;
+                slidePane();
+            }
+        });
+        frame[0].addEventListener('DOMMouseScroll', function (e) {
+            e.preventDefault();
+            slidePane(e.detail);
+        }, false);
+
+        function slidePane(decation) {
+            var handleTop = parseInt(handle.css('top')),
+                paneTop = parseInt(pane.css('margin-top')),
+                handleNewTop, paneNewTop,
+                handleMoveLength, paneMoveLength;
+            if (typeof decation == 'undefined') {
+                decation = 1;
+                handleMoveLength = currentY - prevY;
+                paneMoveLength = Math.round(handleMoveLength * r);
+            } else {
+                decation = decation > 0 ? 1 : -1;
+                handleMoveLength = Math.round(200 / r) * decation;
+                paneMoveLength = 200 * decation;
+            }
+
+            handleNewTop = handleTop + handleMoveLength;
+            paneNewTop = paneTop - paneMoveLength;
+
+            if ((-paneNewTop < h2 && handleNewTop < h1) && (-paneNewTop > 0 && handleNewTop > 0)) {
+                handle.css('top', handleNewTop);
+                pane.css('margin-top', paneNewTop);
+            } else if (-paneNewTop >= h2 || handleNewTop >= h1) {
+                handle.css('top', h1);
+                pane.css('margin-top', -h2);
+            } else if (-paneNewTop <= 0 || handleNewTop <= 0) {
+                handle.css('top', 0);
+                pane.css('margin-top', 0);
+            }
+        }
+    };
+})(jQuery);
