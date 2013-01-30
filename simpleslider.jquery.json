@@ -3,13 +3,13 @@
     "title": "jQuery Slider",
     "version": "1.0",
     "author": {
-        "name": "wtong",
-        "url": ""
+        "name": "jqslider",
+        "url": "https://github.com/jqslider/storesJQ/blob/master/jqslider.txt"
     },
     "licenses": [
         {
             "type": "MIT",
-            "url": ""
+            "url": "https://github.com/jqslider/storesJQ/blob/master/jqslider.txt"
         }
     ],
     "dependencies": {
